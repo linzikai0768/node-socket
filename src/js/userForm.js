@@ -1,4 +1,5 @@
 const hm = require('mysql-ithm')
+
 hm.connect({
   host: 'localhost', //数据库地址
   port: '3306',
@@ -7,18 +8,10 @@ hm.connect({
   database: 'intranet' //数据库名称
 })
 
-let userCode = hm.model('student', {
+let userForm = hm.model('userForm', {
   userCode: String,
   userName: String,
-  isLogin: Boolean
+  isLogin: String
 })
 
-userCode.find((err, results) => {
-  userCode.insert(
-    { userCode: '张三10', userName: '30', isLogin: true },
-    () => {}
-  )
-  console.log(results)
-})
-
-module.exports = userCode
+module.exports = userForm
