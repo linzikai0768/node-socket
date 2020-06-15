@@ -41,15 +41,15 @@ db.query('show databases', (err, results) => {
             () => {}
           )
           connection.query(
-            'CREATE TABLE messageHistory(Id int primary key auto_increment ,userCode varchar(20),userName varchar(20),channelId varchar(20),tiem varchar(20),message varchar(255))',
+            'CREATE TABLE messageHistory(Id int primary key auto_increment ,userCode varchar(20),userName varchar(20),channelId varchar(20),time varchar(20),message varchar(max))',
             () => {}
           )
           connection.query(
-            'CREATE TABLE channelForm(channelId int primary key auto_increment ,channelName varchar(20),creator varchar(20),member varchar(2550))',
+            'CREATE TABLE channelForm(channelId int primary key auto_increment ,channelName varchar(20),creator varchar(20),member varchar(max))',
             () => {}
           )
           connection.query(
-            'insert into channelForm(channelName,creator,member) values("数据中台总群","007","[]")',
+            'insert into channelForm(channelName,creator) values("数据中台总群","007")',
             () => {}
           )
         }

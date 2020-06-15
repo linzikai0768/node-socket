@@ -22,9 +22,9 @@ io.on('connection', socket => {
           )
           // 将用户加入默认频道
           channelForm.find('channelId=1', (err, results) => {
-            let member = JSON.parse(results[0].member)
+            let member = results[0].member.split(',')
             member.push(userCode)
-            member = JSON.stringify(member)
+            member = member.join(',')
             channelForm.update('channelId=1', { member }, (err, results) => {})
           })
         } else {
@@ -39,6 +39,17 @@ io.on('connection', socket => {
 
     // 向所有用户通知用户xxxx下线
     io.emit('userQuit', msg)
+  })
+  socket.on('sendMessage', msg => {
+    let message = msg
+    message.time = Date.now()
+    messageHistory.insert(message, (err, results) => {
+      if (!err) {
+        // 向所有用户发送信息
+        io.emit('sendMessage', message)
+        socket.emit('sendMessage', '发送成功')
+      }
+    })
   })
 })
 // 获取用户列表
@@ -68,13 +79,28 @@ app.post('/acquire/channel', (req, res) => {
 // 获取所在群的所有信息
 app.post('/acquire/allMessage', (req, res) => {
   let { ids } = req.body
-  let channelId = ids.map(item => `channelId=${item}`).join(' and ')
+  let channelId = ids.map(item => `channelId=${item}`).join(' or ')
   messageHistory.sql(
     `select * from messageHistory where ${channelId}`,
     (err, results) => res.send(results)
   )
 })
-
+// 创建新群
+app.post('/addChannel', (req, res) => {
+  let { channelName, creator } = req.body
+  channelForm.sql(
+    `select * from channelForm where channelName="${channelName}"`,
+    (err, results) => {
+      if (!results.length) {
+        channelForm.sql(
+          `insert into channelForm(channelName,creator,member) values("${channelName}","${creator}","${creator}")`,
+          (err, results) =>
+            res.send({ msg: '创建成功', code: 200, channeId: results.insertId })
+        )
+      } else res.send({ msg: '该名称已被使用，请更换', code: 201 })
+    }
+  )
+})
 http.listen(3030, () => {
   console.log('http://localhost:3030')
 })

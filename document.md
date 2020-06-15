@@ -1,6 +1,12 @@
-### 先执行 mysql.js 、再执行 app.js
+打开 phpStudy ，启动 Mysql 服务
+默认项，如果修改过请自行更改
+host: 'localhost'
+user: 'root'
+password: 'root'
 
+执行 node mysql.js
 
+再执行 node app.js
 
 
 
@@ -21,6 +27,10 @@
 携带浏览器标识 例如： { userCode: 2325sdf165 }
 
 #### 5.向所有用户通知新用户下线 (informUserQuit)
+
+
+
+
 
 #### 1.获取频道历史信息
 
@@ -56,3 +66,9 @@
 1. post
 2. url： acquire/messageHistory/list
 3. {userCode :1545df145}
+
+#### 7.创建群
+
+1. post
+2. url： addChannelt
+3. {creator:1545df145,channelName,'007'}
