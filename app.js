@@ -1,13 +1,15 @@
-var app = require('express')()
+const express = require('express')
+const app = express()
 var http = require('http').createServer(app)
 var io = require('socket.io')(http)
 var cors = require('cors')
-var bodyParser = require('body-parser')
+// var bodyParser = require('body-parser')
 let userForm = require('./src/js/userForm')
 let messageHistory = require('./src/js/messageHistory')
 let channelForm = require('./src/js/channelForm')
 app.use(cors())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
+// app.use(bodyParser.urlencoded({ extended: true }))
 io.on('connection', socket => {
   socket.on('userAccess', msg => {
     let { userCode } = JSON.parse(msg)
