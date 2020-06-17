@@ -37,20 +37,20 @@ db.query('show databases', (err, results) => {
 
         if (b.length === 0) {
           connection.query(
-            'CREATE TABLE userForm(userId int primary key auto_increment,userCode varchar(20),userName varchar(20),isLogin varchar(1))',
-            () => {}
+            'CREATE TABLE userForm(userId int primary key auto_increment,userCode varchar(20),userName varchar(20),isLogin int(1))',
+            (a, b) => console.log(b)
           )
           connection.query(
-            'CREATE TABLE messageHistory(Id int primary key auto_increment ,userCode varchar(20),userName varchar(20),channelId varchar(20),time varchar(20),message varchar(max))',
-            () => {}
+            'CREATE TABLE messageHistory(Id int primary key auto_increment ,userCode varchar(20),userName varchar(20),channelId int(6),time BIGINT(20),message varchar(500000))',
+            (a, b) => console.log(b)
           )
           connection.query(
-            'CREATE TABLE channelForm(channelId int primary key auto_increment ,channelName varchar(20),creator varchar(20),member varchar(max))',
-            () => {}
+            'CREATE TABLE channelForm(channelId int primary key auto_increment ,channelName varchar(20),creator varchar(20),member varchar(500000))',
+            (a, b) => console.log(b)
           )
           connection.query(
             'insert into channelForm(channelName,creator) values("数据中台总群","007")',
-            () => {}
+            (a, b) => console.log(b)
           )
         }
       })

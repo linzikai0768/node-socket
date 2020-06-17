@@ -16,15 +16,20 @@ io.on('connection', socket => {
       (err, results) => {
         if (results.length === 0) {
           userForm.sql(
-            `insert into userForm(userCode,isLogin) values("${userCode}",'1')`,
+            `insert into userForm(userCode,isLogin) values("${userCode}",1)`,
             // 让当前用户修改昵称
             (err, results) => socket.emit('changeName', 'changeName')
           )
           // 将用户加入默认频道
           channelForm.find('channelId=1', (err, results) => {
-            let member = results[0].member.split(',')
-            member.push(userCode)
-            member = member.join(',')
+            let member = ''
+            if (results[0].member) {
+              member = results[0].member.split(',')
+              member.push(userCode)
+              member = member.join(',')
+            } else {
+              member = userCode
+            }
             channelForm.update('channelId=1', { member }, (err, results) => {})
           })
         } else {
@@ -95,11 +100,44 @@ app.post('/addChannel', (req, res) => {
         channelForm.sql(
           `insert into channelForm(channelName,creator,member) values("${channelName}","${creator}","${creator}")`,
           (err, results) =>
-            res.send({ msg: '创建成功', code: 200, channeId: results.insertId })
+            res.send({
+              msg: '创建成功',
+              code: 200,
+              channelId: results.insertId
+            })
         )
       } else res.send({ msg: '该名称已被使用，请更换', code: 201 })
     }
   )
+})
+// 加入群
+app.post('/joinChannel', (req, res) => {
+  let { channelName, userCode } = req.body
+  channelForm.sql(
+    `select * from channelForm where channelName="${channelName}"`,
+    (err, results) => {
+      if (results.length) {
+        let member = results[0].member.split(',')
+        if (member.includes(userCode)) {
+          res.send({ msg: '已在群内，无需再次加入', code: 201 })
+          return
+        }
+        member.push(userCode)
+        member = member.join(',')
+        results.member = member
+        channelForm.update(
+          `channelId=${results[0].channelId}`,
+          { member },
+          () => res.send({ msg: '加入成功', code: 200, data: results[0] })
+        )
+      } else res.send({ msg: '该群不存在', code: 201 })
+    }
+  )
+})
+
+app.post('/getData', (req, res) => {
+  console.log(req.body)
+  res.send({ asa: 'asas' })
 })
 http.listen(3030, () => {
   console.log('http://localhost:3030')

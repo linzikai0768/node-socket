@@ -72,3 +72,9 @@ password: 'root'
 1. post
 2. url： addChannelt
 3. {creator:1545df145,channelName,'007'}
+
+#### 8.加入群
+
+1. post
+2. url：  joinChannelt
+3. {creator:1545df145,channelName,'007'}
