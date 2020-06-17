@@ -2,15 +2,17 @@ const express = require('express')
 const app = express()
 var http = require('http').createServer(app)
 var io = require('socket.io')(http)
-var cors = require('cors')
-// var bodyParser = require('body-parser')
+const cors = require('cors')
 let userForm = require('./src/js/userForm')
 let messageHistory = require('./src/js/messageHistory')
 let channelForm = require('./src/js/channelForm')
+let multer = require('multer')
 app.use(cors())
 app.use(express.json())
-// app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.static('file'))
+let sendIo = null
 io.on('connection', socket => {
+  sendIo = message => io.emit('sendImgMessage', message)
   socket.on('userAccess', msg => {
     let { userCode } = JSON.parse(msg)
     userForm.sql(
@@ -53,8 +55,8 @@ io.on('connection', socket => {
     messageHistory.insert(message, (err, results) => {
       if (!err) {
         // 向所有用户发送信息
-        io.emit('sendMessage', message)
-        socket.emit('sendMessage', '发送成功')
+        sendIo(message)
+        // socket.emit('sendMessage', '发送成功')
       }
     })
   })
@@ -136,10 +138,18 @@ app.post('/joinChannel', (req, res) => {
     }
   )
 })
-
-app.post('/getData', (req, res) => {
-  console.log(req.body)
-  res.send({ asa: 'asas' })
+var upImage = multer({ dest: 'file/upImage/' })
+app.post('/send/imgMessage', upImage.single('imgMessage'), (req, res) => {
+  let message = req.body
+  message.time = Date.now()
+  message.imgMessage = '/upImage/' + req.file.filename
+  messageHistory.insert(message, (err, results) => {
+    if (!err) {
+      // 向所有用户发送信息
+      sendIo(message)
+      res.send({ code: 200, msg: '发送成功' })
+    }
+  })
 })
 http.listen(3030, () => {
   console.log('http://localhost:3030')

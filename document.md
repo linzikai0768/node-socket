@@ -38,11 +38,17 @@ password: 'root'
 2. url： acquire/messageHistory/list
 3. {channelId:1,time:时间戳,page:1,num:20}
 
+#### 2.发送图片信息
+
+1. post
+2. url： /send/imgMessage
+3. formdata:{channelId,   userCode,   userName,  imgMessage}
+
 #### 2.发送信息
 
 1. post
-2. url：send/message
-3. { userCode , userName , channelId , message , channelName }
+2. url：/send/message
+3. { userCode , userName , channelId , message }
 
 #### 3. 修改名称
 
